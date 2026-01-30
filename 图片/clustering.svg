@@ -1,0 +1,266 @@
+<svg width="1400" height="750" viewBox="0 0 1400 750" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#333" />
+    </marker>
+    <style>
+      text { font-family: Arial, sans-serif; }
+      .title { font-size: 24px; font-weight: bold; text-anchor: middle; }
+      .label { font-size: 12px; text-anchor: middle; alignment-baseline: middle; }
+      .label-sm { font-size: 10px; text-anchor: middle; alignment-baseline: middle; }
+      .label-left { font-size: 11px; text-anchor: end; alignment-baseline: middle; }
+      .label-bold { font-weight: bold; }
+      
+      /* Colors based on legend */
+      .bg-periwinkle { fill: #dae8fc; stroke: #6c8ebf; stroke-width: 2; rx: 10; } /* Processing Block */
+      .bg-peach { fill: #ffe6cc; stroke: #d79b00; stroke-width: 1.5; rx: 5; } /* Attention/Special Op */
+      .bg-mint { fill: #d5e8d4; stroke: #82b366; stroke-width: 1.5; } /* Data Flow/Tensor */
+      .bg-gray { fill: #f5f5f5; stroke: #666; stroke-width: 1; }
+      
+      .line { stroke: #333; stroke-width: 1.5; fill: none; marker-end: url(#arrow); }
+      .line-dashed { stroke: #555; stroke-width: 1.5; fill: none; stroke-dasharray: 5,3; marker-end: url(#arrow); }
+      .line-no-arrow { stroke: #333; stroke-width: 1.5; fill: none; }
+      
+      .op-circle { fill: #fff; stroke: #000; stroke-width: 1; }
+    </style>
+  </defs>
+
+  <text x="700" y="30" class="title">Hierarchical Diffusion Transformer Model (HiDiT) Architecture</text>
+
+  <g transform="translate(20, 80)">
+    <g transform="translate(0, 0)">
+      <rect x="0" y="0" width="60" height="50" class="bg-mint" />
+      <text x="30" y="65" class="label-sm"><tspan x="30" dy="0">Noisy Household</tspan><tspan x="30" dy="12">Attributes (h_i)</tspan></text>
+    </g>
+    <g transform="translate(0, 90)">
+      <rect x="0" y="0" width="60" height="50" class="bg-mint" />
+      <text x="30" y="65" class="label-sm"><tspan x="30" dy="0">Noisy Individual</tspan><tspan x="30" dy="12">Attributes (P_i)</tspan></text>
+    </g>
+    <g transform="translate(0, 180)">
+      <rect x="0" y="0" width="60" height="50" class="bg-mint" />
+      <text x="30" y="65" class="label-sm"><tspan x="30" dy="0">Household Seg.</tspan><tspan x="30" dy="12">Info (ci, zc)</tspan></text>
+    </g>
+    <g transform="translate(0, 480)">
+      <rect x="0" y="0" width="60" height="50" class="bg-mint" />
+      <text x="30" y="65" class="label-sm"><tspan x="30" dy="0">Noisy Timestep</tspan><tspan x="30" dy="12">(t)</tspan></text>
+    </g>
+  </g>
+
+  <g transform="translate(100, 170)">
+    <rect x="0" y="0" width="100" height="60" rx="5" fill="#f8cecc" stroke="#b85450" />
+    <text x="50" y="15" class="label-sm label-bold">Diffusion Process</text>
+    <text x="50" y="30" class="label-sm">(Forward/Reverse)</text>
+    <text x="50" y="45" class="label-sm" font-family="monospace">Correlated Noise</text>
+  </g>
+
+  <g transform="translate(240, 60)">
+    <rect x="0" y="0" width="160" height="600" class="bg-periwinkle" />
+    <text x="80" y="25" class="label-bold">1. Household-level</text>
+    <text x="80" y="40" class="label-bold">Diffusion Transformer</text>
+
+    <rect x="10" y="60" width="140" height="30" class="bg-peach" />
+    <text x="80" y="75" class="label">Linear Projection</text>
+
+    <rect x="20" y="120" width="120" height="150" class="bg-periwinkle" stroke-dasharray="2,2" />
+    <rect x="30" y="130" width="100" height="40" class="bg-peach" />
+    <text x="80" y="150" class="label-sm">DiT Block (adaLN)</text>
+    <text x="80" y="195" class="label-bold">...</text>
+    <rect x="30" y="220" width="100" height="40" class="bg-peach" />
+    <text x="80" y="240" class="label-sm">DiT Block (adaLN)</text>
+
+    <rect x="50" y="80" width="100" height="30" transform="translate(0, 0)" class="bg-peach" style="display:none;"/> <rect x="50" y="80" width="90" height="30" class="bg-peach" transform="translate(10, 0)" /> 
+    <text x="105" y="95" class="label-sm">Prediction Head</text>
+
+    <g transform="translate(20, 320)">
+        <rect x="0" y="0" width="120" height="260" class="bg-peach" fill-opacity="0.3" />
+        <rect x="20" y="20" width="80" height="30" class="bg-peach" />
+        <text x="60" y="35" class="label-sm">MLP</text>
+        <rect x="20" y="100" width="80" height="40" class="bg-peach" />
+        <text x="60" y="120" class="label-sm">Self-Attention</text>
+        <rect x="20" y="190" width="80" height="30" class="bg-peach" />
+        <text x="60" y="205" class="label-sm">Modulate (adaLN)</text>
+        
+        <circle cx="60" cy="80" r="8" class="op-circle" /><text x="60" y="84" class="label-sm" font-weight="bold">×</text>
+        <circle cx="60" cy="165" r="8" class="op-circle" /><text x="60" y="169" class="label-sm" font-weight="bold">+</text>
+        
+        <path d="M60,190 L60,173" class="line" />
+        <path d="M60,157 L60,140" class="line" />
+        <path d="M60,100 L60,88" class="line" />
+        <path d="M60,72 L60,50" class="line" />
+        
+        <path d="M60,220 L110,220 L110,165 L68,165" class="line-no-arrow" stroke-dasharray="2,2"/>
+        <path d="M68,165 L68,165" class="line"/> </g>
+  </g>
+
+  <g transform="translate(130, 420)">
+      <rect x="0" y="0" width="80" height="30" class="bg-peach" /><text x="40" y="15" class="label-sm">Emb &amp; Norm</text>
+      <rect x="0" y="80" width="80" height="30" class="bg-peach" /><text x="40" y="95" class="label-sm">Emb &amp; Norm</text>
+      <rect x="0" y="160" width="80" height="30" class="bg-peach" /><text x="40" y="175" class="label-sm">Emb &amp; Norm</text>
+  </g>
+
+  <g transform="translate(420, 60)">
+    <rect x="0" y="0" width="130" height="300" class="bg-periwinkle" />
+    <text x="65" y="25" class="label-bold">2. GraphVAE</text>
+    <text x="65" y="40" class="label-bold">Decoder</text>
+    
+    <rect x="15" y="60" width="100" height="30" class="bg-peach" />
+    <text x="65" y="75" class="label-sm">MLP Encoder</text>
+    
+    <rect x="15" y="110" width="100" height="30" class="bg-peach" />
+    <text x="65" y="125" class="label-sm">Latent Space</text>
+
+    <rect x="15" y="160" width="100" height="30" class="bg-peach" />
+    <text x="65" y="175" class="label-sm">Graph Decoder</text>
+    <text x="65" y="187" class="label-sm">(MLP)</text>
+
+    <rect x="15" y="220" width="100" height="40" class="bg-peach" />
+    <text x="65" y="235" class="label-sm">Gumbel-</text>
+    <text x="65" y="250" class="label-sm">Softmax/Sigmoid</text>
+  </g>
+
+  <g transform="translate(570, 60)">
+    <rect x="0" y="0" width="130" height="300" class="bg-periwinkle" />
+    <text x="65" y="25" class="label-bold">3. Heterogeneous</text>
+    <text x="65" y="40" class="label-bold">Graph Transformer</text>
+    <text x="65" y="55" class="label-bold">(HGT)</text>
+
+    <rect x="15" y="70" width="100" height="30" class="bg-peach" />
+    <text x="65" y="85" class="label-sm">Feature Projection</text>
+
+    <rect x="15" y="120" width="100" height="150" class="bg-periwinkle" stroke-dasharray="2,2" fill="#dae8fc" />
+    <rect x="25" y="130" width="80" height="30" class="bg-peach" />
+    <text x="65" y="145" class="label-sm">HGT Layer</text>
+    <text x="65" y="195" class="label-bold">...</text>
+    <rect x="25" y="220" width="80" height="30" class="bg-peach" />
+    <text x="65" y="235" class="label-sm">HGT Layer</text>
+
+    <g transform="translate(0, 320)">
+        <rect x="0" y="0" width="130" height="260" class="bg-peach" fill-opacity="0.3" />
+        <rect x="15" y="20" width="100" height="50" class="bg-peach" />
+        <text x="65" y="35" class="label-sm">Node/Relation-</text>
+        <text x="65" y="50" class="label-sm">Specific Attn (Q,K,V)</text>
+
+        <rect x="15" y="90" width="100" height="50" class="bg-peach" />
+        <text x="65" y="105" class="label-sm">Message Passing</text>
+        <text x="65" y="120" class="label-sm">&amp; Aggregation</text>
+
+        <rect x="15" y="160" width="100" height="50" class="bg-peach" />
+        <text x="65" y="175" class="label-sm">Type-Specific</text>
+        <text x="65" y="190" class="label-sm">Update</text>
+        
+        <path d="M65,70 L65,90" class="line" />
+        <path d="M65,140 L65,160" class="line" />
+    </g>
+  </g>
+
+  <g transform="translate(730, 60)">
+    <rect x="0" y="0" width="160" height="600" class="bg-periwinkle" />
+    <text x="80" y="25" class="label-bold">4. Individual-level</text>
+    <text x="80" y="40" class="label-bold">Diffusion Transformer</text>
+
+    <rect x="10" y="60" width="70" height="30" class="bg-peach" />
+    <text x="45" y="75" class="label-sm">Lin. Proj</text>
+    
+    <rect x="85" y="60" width="65" height="30" class="bg-peach" />
+    <text x="117" y="75" class="label-sm">Pred Head</text>
+
+    <rect x="20" y="120" width="120" height="200" class="bg-periwinkle" stroke-dasharray="2,2" />
+    <rect x="30" y="130" width="100" height="50" class="bg-peach" />
+    <text x="80" y="145" class="label-sm">DiT Block</text>
+    <text x="80" y="160" class="label-sm">(Cross-Attn &amp; adaLN)</text>
+    <text x="80" y="220" class="label-bold">...</text>
+    <rect x="30" y="250" width="100" height="50" class="bg-peach" />
+    <text x="80" y="265" class="label-sm">DiT Block</text>
+    <text x="80" y="280" class="label-sm">(Cross-Attn &amp; adaLN)</text>
+
+    <g transform="translate(20, 340)">
+        <rect x="0" y="0" width="120" height="240" class="bg-peach" fill-opacity="0.3" />
+        
+        <rect x="10" y="10" width="100" height="40" class="bg-peach" />
+        <text x="60" y="25" class="label-sm">Stage 1: Masked</text>
+        <text x="60" y="38" class="label-sm">Self-Attn &amp; adaLN</text>
+        
+        <circle cx="60" cy="70" r="8" class="op-circle" /><text x="60" y="74" class="label-sm" font-weight="bold">×</text>
+
+        <rect x="10" y="90" width="100" height="40" class="bg-peach" />
+        <text x="60" y="105" class="label-sm">Stage 2:</text>
+        <text x="60" y="118" class="label-sm">Cross-Attn &amp; Gating</text>
+
+        <rect x="10" y="150" width="100" height="30" class="bg-peach" />
+        <text x="60" y="165" class="label-sm">Feed-Forward</text>
+        
+        <circle cx="60" cy="200" r="8" class="op-circle" /><text x="60" y="204" class="label-sm" font-weight="bold">+</text>
+
+        <path d="M60,50 L60,62" class="line" />
+        <path d="M60,78 L60,90" class="line" />
+        <path d="M60,130 L60,150" class="line" />
+        <path d="M60,180 L60,192" class="line" />
+    </g>
+  </g>
+
+  <g transform="translate(920, 60)">
+    <rect x="0" y="0" width="110" height="400" class="bg-periwinkle" />
+    <text x="55" y="25" class="label-bold">Loss Function</text>
+    <text x="55" y="40" class="label-bold">Calculation</text>
+
+    <g transform="translate(15, 120)">
+        <rect x="0" y="0" width="80" height="50" class="bg-peach" />
+        <text x="40" y="15" class="label-sm">Household</text>
+        <text x="40" y="27" class="label-sm">Loss</text>
+        <text x="40" y="40" class="label-sm" font-size="9">(MSE, Focal)</text>
+    </g>
+    
+    <g transform="translate(15, 200)">
+        <rect x="0" y="0" width="80" height="50" class="bg-peach" />
+        <text x="40" y="15" class="label-sm">Individual</text>
+        <text x="40" y="27" class="label-sm">Loss</text>
+        <text x="40" y="40" class="label-sm" font-size="9">(MSE, Mask)</text>
+    </g>
+
+    <g transform="translate(15, 300)">
+        <rect x="0" y="0" width="80" height="50" class="bg-peach" />
+        <text x="40" y="15" class="label-sm">Graph Loss</text>
+        <text x="40" y="27" class="label-sm">(BCE, Focal)</text>
+    </g>
+
+    <circle cx="125" cy="225" r="10" class="op-circle" /><text x="125" y="229" class="label-sm" font-weight="bold">+</text>
+    <rect x="150" y="205" width="40" height="40" class="bg-mint" />
+    <text x="170" y="220" class="label-sm">Total</text>
+    <text x="170" y="235" class="label-sm">Loss</text>
+
+    <path d="M95,145 L125,145 L125,215" class="line" />
+    <path d="M95,225 L115,225" class="line" />
+    <path d="M95,325 L125,325 L125,235" class="line" />
+    <path d="M135,225 L150,225" class="line" />
+  </g>
+
+  <path d="M80,105 L240,105" class="line" /> <text x="140" y="100" class="label-sm">h(0)</text>
+
+  <path d="M200,200 L240,200" class="line" /> <rect x="380" y="85" width="20" height="20" class="bg-mint" /> <path d="M340,95 L380,95" class="line" />
+  <path d="M400,95 L435,95 L435,110" class="line" />
+
+  <rect x="450" y="370" width="30" height="30" class="bg-mint" /> <text x="465" y="420" class="label-sm">Predicted Graph</text>
+  <path d="M485,260 L485,320 L465,320 L465,370" class="line" />
+  <path d="M480,385 L540,385 L540,140 L570,140" class="line-dashed" /> <rect x="650" y="480" width="30" height="30" class="bg-mint" /> <text x="665" y="525" class="label-sm">Graph Feat (g)</text>
+  <path d="M635,320 L665,320 L665,480" class="line-dashed" /> <path d="M680,495 L750,495 L750,410" class="line-dashed" /> <path d="M700,100 L730,100" class="line" /> <path d="M680,495 L710,495 L710,180 L740,180" class="line-dashed" /> <path d="M80,180 L180,180 L180,20 L740,20 L740,75" class="line" /> <text x="710" y="70" class="label-sm">P(0)</text>
+
+  <path d="M80,270 L130,435" class="line" /> <path d="M80,270 L130,515" class="line" /> <path d="M80,570 L130,595" class="line" /> <path d="M210,435 L260,435 L260,470" class="line-dashed" /> <text x="235" y="425" class="label-sm">c_h</text>
+  
+  <path d="M210,515 L300,515 L300,410" class="line-dashed" /> <path d="M210,595 L340,595 L340,540" class="line-dashed" /> <text x="235" y="585" class="label-sm">c_h</text>
+
+  <path d="M380,85 L380,40 L950,40 L950,135" class="line" /> <path d="M890,75 L910,75 L910,215 L935,215" class="line" /> <path d="M480,385 L850,385 L850,325 L935,325" class="line" /> <g transform="translate(1150, 600)">
+    <rect x="0" y="0" width="200" height="110" fill="white" stroke="#333" />
+    <rect x="10" y="10" width="20" height="20" class="bg-periwinkle" />
+    <text x="40" y="25" class="label-left" text-anchor="start">Processing Block</text>
+    
+    <rect x="10" y="35" width="20" height="20" class="bg-peach" />
+    <text x="40" y="50" class="label-left" text-anchor="start">Attention/Special Op</text>
+    
+    <rect x="10" y="60" width="20" height="20" class="bg-mint" />
+    <text x="40" y="75" class="label-left" text-anchor="start">Data Flow/Tensor</text>
+    
+    <circle cx="20" cy="95" r="8" class="op-circle" /><text x="20" y="99" class="label-sm" font-weight="bold">+</text>
+    <text x="40" y="100" class="label-left" text-anchor="start">Operation (+, x)</text>
+  </g>
+
+</svg>

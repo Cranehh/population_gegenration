@@ -1,0 +1,18 @@
+{
+  "data_dir": "\u6570\u636e",
+  "result_dir": "bohb_results",
+  "device": null,
+  "n_iterations": 100,
+  "min_budget": 10,
+  "max_budget": 100,
+  "eta": 3,
+  "min_points": 20,
+  "gamma": 0.15,
+  "n_candidates": 64,
+  "random_fraction": 0.1,
+  "importance_update_freq": 10,
+  "simplified": false,
+  "include_loss_weights": true,
+  "resume": null,
+  "seed": 42
+}

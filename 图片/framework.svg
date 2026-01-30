@@ -1,0 +1,222 @@
+<svg width="1200" height="650" viewBox="0 0 1200 650" xmlns="http://www.w3.org/2000/svg" style="font-family: Arial, sans-serif; background-color: white;">
+  
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#000" />
+    </marker>
+    <marker id="arrowhead-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#666" />
+    </marker>
+    
+    <symbol id="cube-icon" viewBox="0 0 20 20">
+      <path d="M2,6 L10,2 L18,6 L10,10 Z" fill="#e0e0e0" stroke="#666" stroke-width="0.5"/>
+      <path d="M2,6 L10,10 L10,19 L2,15 Z" fill="#b0c4de" stroke="#666" stroke-width="0.5"/>
+      <path d="M18,6 L18,15 L10,19 L10,10 Z" fill="#a0b0d0" stroke="#666" stroke-width="0.5"/>
+    </symbol>
+
+    <symbol id="cube-orange" viewBox="0 0 20 20">
+      <path d="M2,6 L10,2 L18,6 L10,10 Z" fill="#ffe0cc" stroke="#d98c5e" stroke-width="0.5"/>
+      <path d="M2,6 L10,10 L10,19 L2,15 Z" fill="#fddcc8" stroke="#d98c5e" stroke-width="0.5"/>
+      <path d="M18,6 L18,15 L10,19 L10,10 Z" fill="#fcb895" stroke="#d98c5e" stroke-width="0.5"/>
+    </symbol>
+    
+    <symbol id="cube-green" viewBox="0 0 20 20">
+      <path d="M2,6 L10,2 L18,6 L10,10 Z" fill="#e0f0e0" stroke="#6b8e23" stroke-width="0.5"/>
+      <path d="M2,6 L10,10 L10,19 L2,15 Z" fill="#cceecc" stroke="#6b8e23" stroke-width="0.5"/>
+      <path d="M18,6 L18,15 L10,19 L10,10 Z" fill="#aaddaa" stroke="#6b8e23" stroke-width="0.5"/>
+    </symbol>
+  </defs>
+
+  <text x="600" y="40" text-anchor="middle" font-size="24" font-weight="bold">Proposed HiDiT Model Architecture: Four-Component Framework</text>
+
+  <text x="70" y="110" font-size="14" font-weight="bold" text-anchor="middle">Raw Household</text>
+  <text x="70" y="125" font-size="14" font-weight="bold" text-anchor="middle">Attributes</text>
+  <text x="70" y="140" font-size="12" text-anchor="middle">(Sociodemographic)</text>
+  <use href="#cube-icon" x="55" y="150" width="30" height="30" />
+  
+  <text x="70" y="270" font-size="14" font-weight="bold" text-anchor="middle">Raw Individual</text>
+  <text x="70" y="285" font-size="14" font-weight="bold" text-anchor="middle">Attributes</text>
+  <use href="#cube-icon" x="55" y="295" width="30" height="30" />
+
+  <line x1="90" y1="165" x2="150" y2="165" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <line x1="90" y1="310" x2="190" y2="310" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <rect x="150" y="80" width="160" height="200" rx="5" fill="#d0ddf5" stroke="#8da8d6" stroke-width="2" />
+  <text x="230" y="100" font-size="14" font-weight="bold" text-anchor="middle">1. Household</text>
+  <text x="230" y="115" font-size="14" font-weight="bold" text-anchor="middle">Segmentation</text>
+
+  <rect x="160" y="130" width="140" height="50" rx="3" fill="#eef4fc" stroke="#adc4e6" />
+  <text x="230" y="150" font-size="12" text-anchor="middle">Categorize</text>
+  <text x="230" y="165" font-size="12" text-anchor="middle">Households -> Segments</text>
+
+  <rect x="160" y="200" width="140" height="50" rx="3" fill="#eef4fc" stroke="#adc4e6" />
+  <text x="230" y="220" font-size="11" text-anchor="middle">Reduce Latent</text>
+  <text x="230" y="235" font-size="11" text-anchor="middle">Complexity,</text>
+  <text x="230" y="248" font-size="11" text-anchor="middle">Handle One-to-Many</text>
+
+  <line x1="310" y1="160" x2="350" y2="160" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <text x="330" y="145" font-size="11" text-anchor="middle">Condition</text>
+  <text x="330" y="155" font-size="11" text-anchor="middle">Info</text>
+  <text x="330" y="165" font-size="11" text-anchor="middle">(Segments)</text>
+  <use href="#cube-orange" x="320" y="168" width="20" height="20" />
+
+
+  <rect x="350" y="70" width="550" height="330" rx="10" fill="#f0f0f0" stroke="#666" stroke-width="2" />
+  <text x="625" y="95" font-size="16" font-weight="bold" text-anchor="middle">2. Hierarchical Diffusion Transformer Model (HiDiT)</text>
+
+  <rect x="370" y="110" width="510" height="80" rx="5" fill="#d0ddf5" stroke="#8da8d6" stroke-width="1.5" />
+  <text x="625" y="145" font-size="16" font-weight="bold" text-anchor="middle">Up-level Household Attributes</text>
+  <text x="625" y="165" font-size="14" text-anchor="middle">(Diffusion Process)</text>
+
+  <rect x="370" y="300" width="510" height="80" rx="5" fill="#d0ddf5" stroke="#8da8d6" stroke-width="1.5" />
+  <text x="625" y="335" font-size="16" font-weight="bold" text-anchor="middle">Down-level Individual Attributes</text>
+  <text x="625" y="355" font-size="14" text-anchor="middle">(Diffusion Process)</text>
+  
+  <path d="M370,300 L350,300 L350,380 L370,380" fill="#d0ddf5" stroke="#8da8d6" stroke-width="1.5" stroke-dasharray="0" /> 
+  <line x1="190" y1="310" x2="350" y2="340" stroke="black" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowhead)" />
+  <path d="M190,290 L260,290 L260,370 L190,370 Z" fill="#d0ddf5" stroke="#8da8d6" stroke-width="1.5" opacity="0.9" transform="translate(10, 10)" />
+  <text x="235" y="325" font-size="12" font-weight="bold" text-anchor="middle">Down-level</text>
+  <text x="235" y="340" font-size="12" font-weight="bold" text-anchor="middle">Individual</text>
+  <text x="235" y="355" font-size="12" font-weight="bold" text-anchor="middle">Attributes</text>
+  <text x="235" y="370" font-size="11" text-anchor="middle">(Diffusion</text>
+  <text x="235" y="385" font-size="11" text-anchor="middle">Process)</text>
+  <line x1="85" y1="310" x2="200" y2="330" stroke="black" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowhead)" />
+  <line x1="260" y1="330" x2="370" y2="340" stroke="black" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arrowhead)" />
+
+  <rect x="370" y="215" width="160" height="70" rx="5" fill="#fddcc8" stroke="#f4a460" stroke-width="1.5" />
+  <text x="450" y="235" font-size="13" font-weight="bold" text-anchor="middle">Graph-related</text>
+  <text x="450" y="250" font-size="13" font-weight="bold" text-anchor="middle">Module</text>
+  <text x="450" y="265" font-size="11" text-anchor="middle">(Intra-household</text>
+  <text x="450" y="278" font-size="11" text-anchor="middle">Relationships)</text>
+  <circle cx="385" cy="240" r="4" fill="white" stroke="black" />
+  <circle cx="395" cy="260" r="4" fill="white" stroke="black" />
+  <circle cx="375" cy="260" r="4" fill="white" stroke="black" />
+  <line x1="385" y1="240" x2="395" y2="260" stroke="black" stroke-width="1" />
+  <line x1="385" y1="240" x2="375" y2="260" stroke="black" stroke-width="1" />
+  
+  <circle cx="515" cy="240" r="4" fill="white" stroke="black" />
+  <circle cx="525" cy="260" r="4" fill="white" stroke="black" />
+  <circle cx="505" cy="260" r="4" fill="white" stroke="black" />
+  <line x1="515" y1="240" x2="525" y2="260" stroke="black" stroke-width="1" />
+  <line x1="515" y1="240" x2="505" y2="260" stroke="black" stroke-width="1" />
+
+  <rect x="540" y="235" width="50" height="30" rx="2" fill="#e0e0e0" stroke="#999" />
+  <text x="565" y="248" font-size="10" text-anchor="middle">Forward</text>
+  <text x="565" y="258" font-size="10" text-anchor="middle">Noise</text>
+
+  <rect x="610" y="235" width="50" height="30" rx="2" fill="#d0ddf5" stroke="#999" /> <text x="635" y="248" font-size="10" text-anchor="middle">Latent</text>
+  <text x="635" y="258" font-size="10" text-anchor="middle">Space</text>
+
+  <rect x="680" y="230" width="70" height="40" rx="2" fill="#fddcc8" stroke="#f4a460" />
+  <text x="715" y="248" font-size="11" font-weight="bold" text-anchor="middle">Reverse</text>
+  <text x="715" y="260" font-size="11" font-weight="bold" text-anchor="middle">Denoising</text>
+
+  <rect x="780" y="235" width="60" height="30" rx="2" fill="#cceecc" stroke="#8fbc8f" />
+  <text x="810" y="248" font-size="10" text-anchor="middle">Generated</text>
+  <text x="810" y="258" font-size="10" text-anchor="middle">Attributes</text>
+
+  <line x1="450" y1="190" x2="450" y2="215" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  
+  <line x1="530" y1="250" x2="540" y2="250" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <line x1="590" y1="250" x2="610" y2="250" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <line x1="660" y1="250" x2="680" y2="250" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <line x1="750" y1="250" x2="780" y2="250" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <line x1="400" y1="285" x2="400" y2="300" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <line x1="480" y1="300" x2="480" y2="285" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" stroke-dasharray="3,2"/> 
+
+  <circle cx="700" cy="210" r="10" fill="#f0f0f0" stroke="black" stroke-width="1" />
+  <text x="700" y="214" font-size="14" text-anchor="middle">+</text>
+  
+  <circle cx="760" cy="210" r="10" fill="#f0f0f0" stroke="black" stroke-width="1" />
+  <text x="760" y="213" font-size="12" text-anchor="middle">x</text>
+
+  <circle cx="715" cy="285" r="10" fill="#f0f0f0" stroke="black" stroke-width="1" />
+  <text x="715" y="288" font-size="12" text-anchor="middle">x</text>
+
+  <line x1="715" y1="230" x2="705" y2="218" stroke="black" stroke-width="1" marker-end="url(#arrowhead)" />
+  <line x1="700" y1="200" x2="700" y2="190" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  
+  <line x1="790" y1="235" x2="770" y2="218" stroke="black" stroke-width="1" marker-end="url(#arrowhead)" />
+  <line x1="760" y1="200" x2="760" y2="190" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <line x1="715" y1="300" x2="715" y2="295" stroke="black" stroke-width="1.5" />
+  <line x1="715" y1="275" x2="715" y2="270" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  
+  <line x1="810" y1="265" x2="810" y2="300" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+
+  <rect x="360" y="420" width="100" height="50" rx="3" fill="#cceecc" stroke="#8fbc8f" />
+  <text x="410" y="440" font-size="11" text-anchor="middle">Known Marginal</text>
+  <text x="410" y="452" font-size="11" text-anchor="middle">Constraints</text>
+  <text x="410" y="464" font-size="11" text-anchor="middle">(Multi-scale)</text>
+
+  <rect x="360" y="510" width="100" height="50" rx="3" fill="#cceecc" stroke="#8fbc8f" />
+  <text x="410" y="530" font-size="11" text-anchor="middle">Data Sparsity</text>
+  <text x="410" y="542" font-size="11" text-anchor="middle">&amp; Realistic</text>
+  <text x="410" y="554" font-size="11" text-anchor="middle">Constraints</text>
+
+  <rect x="490" y="415" width="240" height="80" rx="5" fill="#fddcc8" stroke="#f4a460" stroke-width="1.5" />
+  <text x="610" y="435" font-size="14" font-weight="bold" text-anchor="middle">3. Energy-based Guidance</text>
+  <text x="610" y="450" font-size="12" text-anchor="middle">(Multi-scale Marginal Alignment)</text>
+  <rect x="540" y="460" width="140" height="25" rx="3" fill="#ffeadd" stroke="#f4a460" />
+  <text x="610" y="477" font-size="12" text-anchor="middle">Align with Demographics</text>
+
+  <rect x="490" y="505" width="240" height="80" rx="5" fill="#fddcc8" stroke="#f4a460" stroke-width="1.5" />
+  <text x="610" y="525" font-size="14" font-weight="bold" text-anchor="middle">4. Regularization Strategies</text>
+  <text x="610" y="540" font-size="12" text-anchor="middle">(Sampling &amp; Structural Zeros)</text>
+  <rect x="540" y="550" width="140" height="25" rx="3" fill="#ffeadd" stroke="#f4a460" />
+  <text x="610" y="562" font-size="11" text-anchor="middle">Distinguish Zeros,</text>
+  <text x="610" y="573" font-size="11" text-anchor="middle">Ensure Realism</text>
+
+  <line x1="460" y1="445" x2="490" y2="445" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <line x1="460" y1="535" x2="490" y2="535" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <line x1="730" y1="415" x2="730" y2="270" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <line x1="750" y1="505" x2="750" y2="400" stroke="black" stroke-width="1.5" /> 
+  <line x1="750" y1="400" x2="750" y2="270" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+
+  <line x1="900" y1="250" x2="940" y2="250" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <text x="920" y="235" font-size="11" text-anchor="middle">Generated</text>
+  <text x="920" y="245" font-size="11" text-anchor="middle">Synthetic</text>
+  <text x="920" y="255" font-size="11" text-anchor="middle">Attributes</text>
+  <text x="920" y="265" font-size="10" text-anchor="middle">(Pre-</text>
+  <text x="920" y="275" font-size="10" text-anchor="middle">Guidance)</text>
+  <use href="#cube-green" x="910" y="280" width="20" height="20" />
+
+  <rect x="950" y="80" width="180" height="300" rx="5" fill="#d0ddf5" stroke="#8da8d6" stroke-width="2" />
+  <text x="1040" y="100" font-size="14" font-weight="bold" text-anchor="middle">Final Generated</text>
+  <text x="1040" y="115" font-size="14" font-weight="bold" text-anchor="middle">Synthetic Population</text>
+
+  <rect x="970" y="130" width="140" height="100" rx="3" fill="#eef4fc" stroke="#adc4e6" />
+  <text x="1040" y="150" font-size="13" font-weight="bold" text-anchor="middle">Synthetic</text>
+  <text x="1040" y="165" font-size="13" font-weight="bold" text-anchor="middle">Households</text>
+  <text x="1040" y="180" font-size="12" text-anchor="middle">(Aligned)</text>
+  <use href="#cube-icon" x="1060" y="190" width="25" height="25" />
+
+  <rect x="970" y="260" width="140" height="100" rx="3" fill="#eef4fc" stroke="#adc4e6" />
+  <text x="1040" y="280" font-size="13" font-weight="bold" text-anchor="middle">Synthetic</text>
+  <text x="1040" y="295" font-size="13" font-weight="bold" text-anchor="middle">Individuals</text>
+  <text x="1040" y="310" font-size="12" text-anchor="middle">(Aligned)</text>
+  <use href="#cube-icon" x="1060" y="320" width="25" height="25" />
+
+  <line x1="1040" y1="230" x2="1040" y2="260" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+
+  <rect x="900" y="470" width="230" height="110" rx="5" fill="white" stroke="#666" stroke-width="1" />
+  
+  <rect x="910" y="480" width="15" height="15" fill="#d0ddf5" stroke="#8da8d6" />
+  <text x="935" y="492" font-size="11">Processing Block (Periwinkle)</text>
+
+  <rect x="910" y="505" width="15" height="15" fill="#fddcc8" stroke="#f4a460" />
+  <text x="935" y="517" font-size="11">Attention/Special Op (Peach)</text>
+
+  <rect x="910" y="530" width="15" height="15" fill="#cceecc" stroke="#8fbc8f" />
+  <text x="935" y="542" font-size="11">Data Flow/Tensor (Mint/Gray)</text>
+  
+  <circle cx="917" cy="560" r="6" fill="none" stroke="black" />
+  <text x="917" y="563" font-size="10" text-anchor="middle">x</text>
+  <text x="935" y="565" font-size="11">Operation (+, x)</text>
+
+</svg>

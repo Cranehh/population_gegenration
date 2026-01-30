@@ -1,0 +1,277 @@
+<svg width="1400" height="750" viewBox="0 0 1400 750" xmlns="http://www.w3.org/2000/svg" style="font-family: Arial, sans-serif; background-color: white;">
+
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#000" />
+    </marker>
+    
+    <symbol id="cube-cyan" viewBox="0 0 20 20">
+      <path d="M2,6 L10,2 L18,6 L10,10 Z" fill="#afeeee" stroke="#666" stroke-width="0.5"/>
+      <path d="M2,6 L10,10 L10,19 L2,15 Z" fill="#90e0e0" stroke="#666" stroke-width="0.5"/>
+      <path d="M18,6 L18,15 L10,19 L10,10 Z" fill="#70d0d0" stroke="#666" stroke-width="0.5"/>
+    </symbol>
+
+    <symbol id="cube-mint" viewBox="0 0 20 20">
+      <path d="M2,6 L10,2 L18,6 L10,10 Z" fill="#cceecc" stroke="#6b8e23" stroke-width="0.5"/>
+      <path d="M2,6 L10,10 L10,19 L2,15 Z" fill="#b0ddb0" stroke="#6b8e23" stroke-width="0.5"/>
+      <path d="M18,6 L18,15 L10,19 L10,10 Z" fill="#99cc99" stroke="#6b8e23" stroke-width="0.5"/>
+    </symbol>
+
+    <symbol id="op-plus" viewBox="0 0 20 20">
+       <circle cx="10" cy="10" r="9" fill="white" stroke="black" stroke-width="1" />
+       <line x1="10" y1="5" x2="10" y2="15" stroke="black" stroke-width="1.5" />
+       <line x1="5" y1="10" x2="15" y2="10" stroke="black" stroke-width="1.5" />
+    </symbol>
+    <symbol id="op-minus" viewBox="0 0 20 20">
+       <circle cx="10" cy="10" r="9" fill="white" stroke="black" stroke-width="1" />
+       <line x1="5" y1="10" x2="15" y2="10" stroke="black" stroke-width="1.5" />
+    </symbol>
+    <symbol id="op-mult" viewBox="0 0 20 20">
+       <circle cx="10" cy="10" r="9" fill="white" stroke="black" stroke-width="1" />
+       <line x1="6" y1="6" x2="14" y2="14" stroke="black" stroke-width="1.5" />
+       <line x1="14" y1="6" x2="6" y2="14" stroke="black" stroke-width="1.5" />
+    </symbol>
+  </defs>
+
+  <text x="700" y="40" text-anchor="middle" font-size="24" font-weight="bold">Energy-based Guidance with CAGrad for Multi-scale Marginal Alignment</text>
+
+
+  <rect x="20" y="120" width="160" height="230" rx="5" fill="#cceecc" stroke="#6b8e23" stroke-width="1.5" />
+  <text x="100" y="140" text-anchor="middle" font-size="12" font-weight="bold">Initial Coupled Noise</text>
+  <text x="100" y="155" text-anchor="middle" font-size="12" font-weight="bold">(t = T)</text>
+
+  <use href="#cube-cyan" x="80" y="170" width="40" height="40" />
+  <text x="100" y="220" text-anchor="middle" font-size="11">Household</text>
+  <text x="100" y="232" text-anchor="middle" font-size="11">Noise</text>
+  <text x="100" y="245" text-anchor="middle" font-size="11">(x<tspan dy="-3" font-size="8">T</tspan><tspan dy="-4" font-size="8">h</tspan>)</text>
+
+  <use href="#cube-cyan" x="80" y="260" width="40" height="40" />
+  <text x="100" y="310" text-anchor="middle" font-size="11">Individual</text>
+  <text x="100" y="322" text-anchor="middle" font-size="11">Noise</text>
+  <text x="100" y="335" text-anchor="middle" font-size="11">(x<tspan dy="-3" font-size="8">T</tspan><tspan dy="-4" font-size="8">p</tspan>)</text>
+
+  <rect x="40" y="350" width="120" height="30" rx="3" fill="#cceecc" stroke="#6b8e23" />
+  <text x="100" y="370" text-anchor="middle" font-size="11">Correlated</text>
+  <text x="100" y="382" text-anchor="middle" font-size="11">Initialization</text>
+  
+  <line x1="180" y1="235" x2="230" y2="235" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+
+  <text x="700" y="80" text-anchor="middle" font-size="14" font-style="italic">Iterate t = T ... 1</text>
+  <rect x="230" y="90" width="970" height="330" rx="10" fill="#d0ddf5" stroke="#8da8d6" stroke-width="2" />
+  <text x="715" y="115" text-anchor="middle" font-size="14" font-weight="bold">Reverse Diffusion Sampling Step (t → t - 1)</text>
+
+  <use href="#cube-cyan" x="300" y="180" width="50" height="50" />
+  <text x="325" y="165" text-anchor="middle" font-size="12" font-weight="bold">Noisy Data</text>
+  <text x="325" y="180" text-anchor="middle" font-size="12">(x<tspan dy="-3" font-size="9">t</tspan><tspan dy="-4" font-size="9">h</tspan>, x<tspan dy="-3" font-size="9">t</tspan><tspan dy="-4" font-size="9">p</tspan>)</text>
+  <line x1="350" y1="205" x2="400" y2="205" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <rect x="400" y="170" width="140" height="70" rx="5" fill="#9fa8da" stroke="#7986cb" /> <text x="470" y="200" text-anchor="middle" font-size="12" font-weight="bold">Trained</text>
+  <text x="470" y="215" text-anchor="middle" font-size="12" font-weight="bold">HiDiT Model</text>
+  <text x="470" y="230" text-anchor="middle" font-size="12">(f<tspan dy="2" font-size="9">θ</tspan>)</text>
+  <line x1="540" y1="205" x2="650" y2="205" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <use href="#cube-cyan" x="660" y="180" width="50" height="50" />
+  <text x="685" y="150" text-anchor="middle" font-size="11">Predicted Clean</text>
+  <text x="685" y="165" text-anchor="middle" font-size="11">Data (x̂<tspan dy="-3" font-size="9">0</tspan><tspan dy="-4" font-size="9">h</tspan>, x̂<tspan dy="-3" font-size="9">0</tspan><tspan dy="-4" font-size="9">p</tspan>)</text>
+
+  <rect x="250" y="330" width="120" height="50" rx="3" fill="#9fa8da" stroke="#7986cb" />
+  <text x="310" y="350" text-anchor="middle" font-size="11">Previous</text>
+  <text x="310" y="362" text-anchor="middle" font-size="11">Batches Stats</text>
+  <text x="310" y="375" text-anchor="middle" font-size="10">(N<tspan dy="2" font-size="8">prev</tspan>, q<tspan dy="2" font-size="8">prev</tspan>)</text>
+  <line x1="370" y1="355" x2="480" y2="355" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <rect x="480" y="330" width="200" height="70" rx="5" fill="#fddcc8" stroke="#f4a460" />
+  <text x="580" y="355" text-anchor="middle" font-size="12" font-weight="bold">Accumulate Statistics &amp;</text>
+  <text x="580" y="375" text-anchor="middle" font-size="12" font-weight="bold">Estimate Proportions</text>
+  <text x="580" y="390" text-anchor="middle" font-size="12" font-weight="bold">(q̂)</text>
+  <line x1="685" y1="230" x2="685" y2="280" stroke="black" stroke-width="1.5" />
+  <line x1="685" y1="280" x2="580" y2="280" stroke="black" stroke-width="1.5" />
+  <line x1="580" y1="280" x2="580" y2="330" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <text x="800" y="150" text-anchor="middle" font-size="11">Compute</text>
+  <text x="800" y="165" text-anchor="middle" font-size="11">Posterior</text>
+  <text x="800" y="180" text-anchor="middle" font-size="11">Mean (μ<tspan dy="2" font-size="9">θ</tspan>)</text>
+  
+  <use href="#op-plus" x="790" y="215" width="20" height="20" />
+  <line x1="710" y1="205" x2="750" y2="205" stroke="black" stroke-width="1.5" />
+  <line x1="750" y1="205" x2="750" y2="225" stroke="black" stroke-width="1.5" />
+  <line x1="750" y1="225" x2="790" y2="225" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <use href="#op-minus" x="860" y="215" width="20" height="20" />
+  <line x1="810" y1="225" x2="860" y2="225" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <use href="#op-plus" x="930" y="215" width="20" height="20" />
+  <line x1="880" y1="225" x2="930" y2="225" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <use href="#cube-cyan" x="920" y="140" width="40" height="40" />
+  <text x="940" y="120" text-anchor="middle" font-size="11">Standard</text>
+  <text x="940" y="135" text-anchor="middle" font-size="11">Noise (<tspan font-weight="bold">z</tspan>)</text>
+  <line x1="940" y1="180" x2="940" y2="215" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <line x1="870" y1="460" x2="870" y2="235" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <text x="890" y="330" text-anchor="middle" font-size="11">Scaled</text>
+  <text x="890" y="345" text-anchor="middle" font-size="11">Guidance</text>
+  <text x="890" y="360" text-anchor="middle" font-size="11">(s · <tspan font-weight="bold">g</tspan><tspan dy="2" font-size="9">unified</tspan>)</text>
+
+  <use href="#cube-cyan" x="1050" y="180" width="50" height="50" />
+  <text x="1075" y="150" text-anchor="middle" font-size="11">Next Step Data</text>
+  <text x="1075" y="165" text-anchor="middle" font-size="11">(x<tspan dy="-3" font-size="9">t-1</tspan><tspan dy="-4" font-size="9">h</tspan>, x<tspan dy="-3" font-size="9">t-1</tspan><tspan dy="-4" font-size="9">p</tspan>)</text>
+  <line x1="950" y1="225" x2="1050" y2="225" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+
+  <line x1="1200" y1="225" x2="1250" y2="225" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <rect x="1250" y="120" width="130" height="230" rx="5" fill="#cceecc" stroke="#6b8e23" stroke-width="1.5" />
+  <text x="1315" y="145" text-anchor="middle" font-size="12" font-weight="bold">Final Synthetic</text>
+  <text x="1315" y="160" text-anchor="middle" font-size="12" font-weight="bold">Population</text>
+  
+  <use href="#cube-cyan" x="1285" y="180" width="60" height="60" />
+  
+  <text x="1315" y="270" text-anchor="middle" font-size="12" font-weight="bold">Final</text>
+  <text x="1315" y="285" text-anchor="middle" font-size="12" font-weight="bold">Population</text>
+  <text x="1315" y="300" text-anchor="middle" font-size="11">(Aligned)</text>
+
+
+  <rect x="20" y="450" width="160" height="280" rx="5" fill="#cceecc" stroke="#6b8e23" stroke-width="1.5" />
+  <text x="100" y="475" text-anchor="middle" font-size="12" font-weight="bold">Known Marginal</text>
+  <text x="100" y="490" text-anchor="middle" font-size="12" font-weight="bold">Distributions (q*)</text>
+
+  <use href="#cube-mint" x="40" y="510" width="40" height="40" />
+  <text x="100" y="535" text-anchor="middle" font-size="11">Grid</text>
+  <text x="100" y="548" text-anchor="middle" font-size="11">Marginals</text>
+  
+  <use href="#cube-mint" x="40" y="590" width="40" height="40" />
+  <text x="100" y="615" text-anchor="middle" font-size="11">District</text>
+  <text x="100" y="628" text-anchor="middle" font-size="11">Marginals</text>
+
+  <use href="#cube-mint" x="40" y="670" width="40" height="40" />
+  <text x="100" y="695" text-anchor="middle" font-size="11">City</text>
+  <text x="100" y="708" text-anchor="middle" font-size="11">Marginals</text>
+
+  <line x1="140" y1="530" x2="200" y2="530" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <line x1="140" y1="610" x2="200" y2="610" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <line x1="140" y1="690" x2="200" y2="690" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+
+  <line x1="580" y1="400" x2="580" y2="430" stroke="black" stroke-width="1.5" />
+  <line x1="580" y1="430" x2="400" y2="430" stroke="black" stroke-width="1.5" />
+  <line x1="400" y1="430" x2="400" y2="480" stroke="black" stroke-width="1.5" />
+  <text x="400" y="425" text-anchor="middle" font-size="11">Estimated Proportions (q̂<tspan dy="2" font-size="9">k</tspan>)</text>
+
+  <rect x="200" y="480" width="170" height="70" rx="5" fill="#fddcc8" stroke="#f4a460" />
+  <text x="285" y="505" text-anchor="middle" font-size="11" font-weight="bold">Grid Level Energy</text>
+  <text x="285" y="525" text-anchor="middle" font-size="10">J<tspan dy="2" font-size="8">grid</tspan> = ∑ w·(q̂ - q*)²</text>
+  <text x="285" y="540" text-anchor="middle" font-size="10">(Split J<tspan dy="-3" font-size="8">h</tspan>, J<tspan dy="-3" font-size="8">p</tspan>)</text>
+  <line x1="400" y1="480" x2="285" y2="480" stroke="black" stroke-width="1.5" />
+  <line x1="285" y1="480" x2="285" y2="490" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <rect x="200" y="570" width="170" height="70" rx="5" fill="#fddcc8" stroke="#f4a460" />
+  <text x="285" y="595" text-anchor="middle" font-size="11" font-weight="bold">District Level Energy</text>
+  <text x="285" y="615" text-anchor="middle" font-size="10">J<tspan dy="2" font-size="8">district</tspan> = ∑ (J<tspan dy="2" font-size="8">district</tspan>)²</text> <text x="285" y="630" text-anchor="middle" font-size="10">(Split J<tspan dy="-3" font-size="8">h</tspan>, J<tspan dy="-3" font-size="8">p</tspan>)</text>
+  <line x1="400" y1="480" x2="400" y2="560" stroke="black" stroke-width="1.5" />
+  <line x1="400" y1="560" x2="285" y2="560" stroke="black" stroke-width="1.5" />
+  <line x1="285" y1="560" x2="285" y2="580" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <rect x="200" y="660" width="170" height="70" rx="5" fill="#fddcc8" stroke="#f4a460" />
+  <text x="285" y="685" text-anchor="middle" font-size="11" font-weight="bold">City Level Energy</text>
+  <text x="285" y="705" text-anchor="middle" font-size="10">J<tspan dy="2" font-size="8">city</tspan> = ∑ w(q̂ - q*)²</text>
+  <text x="285" y="720" text-anchor="middle" font-size="10">(Split J<tspan dy="-3" font-size="8">h</tspan>, J<tspan dy="-3" font-size="8">p</tspan>)</text>
+  <line x1="400" y1="560" x2="400" y2="650" stroke="black" stroke-width="1.5" />
+  <line x1="400" y1="650" x2="285" y2="650" stroke="black" stroke-width="1.5" />
+  <line x1="285" y1="650" x2="285" y2="670" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <rect x="420" y="490" width="90" height="230" rx="5" fill="#fddcc8" stroke="#f4a460" />
+  <text x="465" y="590" text-anchor="middle" font-size="12" font-weight="bold">Compute</text>
+  <text x="465" y="605" text-anchor="middle" font-size="12" font-weight="bold">Gradients</text>
+  <text x="465" y="625" text-anchor="middle" font-size="12">(∇<tspan dy="2" font-size="9">x<tspan dy="2">t</tspan></tspan>J)</text>
+  
+  <line x1="370" y1="515" x2="420" y2="515" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <line x1="370" y1="605" x2="420" y2="605" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <line x1="370" y1="695" x2="400" y2="695" stroke="black" stroke-width="1.5" />
+  <line x1="400" y1="695" x2="400" y2="660" stroke="black" stroke-width="1.5" />
+  <line x1="400" y1="660" x2="420" y2="660" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <text x="525" y="520" font-size="10">∇J<tspan dy="-3" font-size="8">grid</tspan><tspan dy="-4" font-size="8">h</tspan></text>
+  <text x="525" y="535" font-size="10">∇J<tspan dy="-3" font-size="8">grid</tspan><tspan dy="-4" font-size="8">p</tspan></text>
+  <text x="525" y="565" font-size="10">∇J<tspan dy="-3" font-size="8">dist</tspan><tspan dy="-4" font-size="8">h</tspan></text>
+  <text x="525" y="580" font-size="10">∇J<tspan dy="-3" font-size="8">dist</tspan><tspan dy="-4" font-size="8">p</tspan></text>
+  <text x="535" y="600" font-size="10">⋮</text>
+  <text x="525" y="620" font-size="10">∇J<tspan dy="-3" font-size="8">dist</tspan><tspan dy="-4" font-size="8">h</tspan></text>
+  <text x="525" y="650" font-size="10">∇J<tspan dy="-3" font-size="8">city</tspan><tspan dy="-4" font-size="8">p</tspan></text>
+
+  <rect x="560" y="470" width="330" height="260" rx="5" fill="#fddcc8" stroke="#f4a460" />
+  <text x="725" y="495" text-anchor="middle" font-size="14" font-weight="bold">Gradient Conflict Resolution (CAGrad)</text>
+  
+  <line x1="510" y1="525" x2="560" y2="525" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <line x1="510" y1="570" x2="540" y2="570" stroke="black" stroke-width="1.5" />
+  <line x1="540" y1="570" x2="540" y2="550" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <line x1="510" y1="640" x2="560" y2="640" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <text x="620" y="520" text-anchor="middle" font-size="11">Household</text>
+  <rect x="580" y="530" width="80" height="35" rx="3" fill="#9fa8da" stroke="#7986cb" />
+  <text x="620" y="545" text-anchor="middle" font-size="10">Normalize</text>
+  <text x="620" y="557" text-anchor="middle" font-size="10">Gradients</text>
+  <line x1="660" y1="547" x2="680" y2="547" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <rect x="680" y="530" width="80" height="35" rx="3" fill="#9fa8da" stroke="#7986cb" />
+  <text x="720" y="545" text-anchor="middle" font-size="10">Compute</text>
+  <text x="720" y="557" text-anchor="middle" font-size="10">Average ḡ</text>
+  <line x1="760" y1="547" x2="780" y2="547" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <text x="620" y="620" text-anchor="middle" font-size="11">Individual</text>
+  <rect x="580" y="630" width="80" height="35" rx="3" fill="#9fa8da" stroke="#7986cb" />
+  <text x="620" y="645" text-anchor="middle" font-size="10">Normalize</text>
+  <text x="620" y="657" text-anchor="middle" font-size="10">Gradients</text>
+  <line x1="660" y1="647" x2="680" y2="647" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <rect x="680" y="630" width="80" height="35" rx="3" fill="#9fa8da" stroke="#7986cb" />
+  <text x="720" y="645" text-anchor="middle" font-size="10">Compute</text>
+  <text x="720" y="657" text-anchor="middle" font-size="10">Average ḡ</text>
+  <line x1="760" y1="647" x2="780" y2="647" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+
+  <text x="835" y="520" text-anchor="middle" font-size="11">Household</text>
+  <text x="835" y="620" text-anchor="middle" font-size="11">Individual</text>
+  <rect x="780" y="530" width="100" height="135" rx="5" fill="#9fa8da" stroke="#7986cb" />
+  <text x="830" y="590" text-anchor="middle" font-size="11">Solve QP</text>
+  <text x="830" y="605" text-anchor="middle" font-size="11">for Unified</text>
+  <text x="830" y="620" text-anchor="middle" font-size="11">Gradient</text>
+  <text x="830" y="635" text-anchor="middle" font-size="10">(if conflict)</text>
+
+  <text x="915" y="510" text-anchor="middle" font-size="10">Unified</text>
+  <text x="915" y="522" text-anchor="middle" font-size="10">Gradient</text>
+  <text x="915" y="535" text-anchor="middle" font-size="10" font-weight="bold">g<tspan dy="-3" font-size="8">unified</tspan><tspan dy="-4" font-size="8">h</tspan></text>
+  <line x1="880" y1="550" x2="920" y2="550" stroke="black" stroke-width="1.5" />
+  <line x1="920" y1="550" x2="920" y2="500" stroke="black" stroke-width="1.5" />
+
+  <text x="915" y="680" text-anchor="middle" font-size="10">Unified</text>
+  <text x="915" y="692" text-anchor="middle" font-size="10">Gradient</text>
+  <text x="915" y="705" text-anchor="middle" font-size="10" font-weight="bold">g<tspan dy="-3" font-size="8">unified</tspan><tspan dy="-4" font-size="8">p</tspan></text>
+  <line x1="880" y1="650" x2="920" y2="650" stroke="black" stroke-width="1.5" />
+  <line x1="920" y1="650" x2="920" y2="700" stroke="black" stroke-width="1.5" />
+
+  <rect x="1000" y="530" width="100" height="60" rx="5" fill="#fddcc8" stroke="#f4a460" />
+  <text x="1050" y="555" text-anchor="middle" font-size="12" font-weight="bold">Guidance</text>
+  <text x="1050" y="575" text-anchor="middle" font-size="12" font-weight="bold">Scale (s)</text>
+
+  <use href="#op-mult" x="940" y="540" width="30" height="30" />
+  <line x1="920" y1="520" x2="945" y2="545" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <line x1="920" y1="680" x2="945" y2="565" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  <line x1="1000" y1="555" x2="970" y2="555" stroke="black" stroke-width="1.5" marker-end="url(#arrowhead)" />
+  
+  <line x1="955" y1="540" x2="955" y2="460" stroke="black" stroke-width="1.5" />
+  <line x1="955" y1="460" x2="870" y2="460" stroke="black" stroke-width="1.5" />
+
+
+  <rect x="1120" y="620" width="260" height="110" rx="5" fill="white" stroke="#666" stroke-width="1" />
+  
+  <rect x="1140" y="635" width="15" height="15" fill="#9fa8da" stroke="#7986cb" />
+  <text x="1170" y="647" font-size="12">Processing Block (Periwinkle)</text>
+
+  <rect x="1140" y="660" width="15" height="15" fill="#fddcc8" stroke="#f4a460" />
+  <text x="1170" y="672" font-size="12">Attention/Special Op (Peach)</text>
+
+  <use href="#cube-cyan" x="1138" y="682" width="20" height="20" />
+  <text x="1170" y="697" font-size="12">Data Flow/Tensor (Mint)</text> <use href="#op-mult" x="1140" y="710" width="15" height="15" />
+  <text x="1170" y="722" font-size="12">Operation (+, -, x)</text>
+
+</svg>

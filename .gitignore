@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.idea/
+.vscode/
+checkpoints/
+生成数据*/
+数据/
+文献综述/
+*.pth
+*.pt
+results/
+VAE训练数据/
+*.pkl
+*checkpoints/
