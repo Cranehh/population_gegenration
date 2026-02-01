@@ -73,6 +73,7 @@ class EnhancedBOHBOptimizer:
         min_budget: int = 10,
         max_budget: int = 200,
         eta: int = 3,
+        n_gpus: int = 1,  # 新增：GPU数量，用于对齐配置数
         min_points_in_model: int = 20,
         importance_update_frequency: int = 10,
         gamma: float = 0.15,
@@ -95,6 +96,7 @@ class EnhancedBOHBOptimizer:
             random_fraction: 随机采样比例
             result_dir: 结果保存目录
         """
+        self.n_gpus = n_gpus  # 新增
         self.cs = configspace
         self.min_budget = min_budget
         self.max_budget = max_budget
@@ -147,16 +149,25 @@ class EnhancedBOHBOptimizer:
             os.makedirs(result_dir, exist_ok=True)
 
     def _init_hyperband_params(self):
-        """初始化Hyperband参数"""
+        """初始化Hyperband参数，配置数量对齐GPU数量"""
         # s_max = floor(log_eta(max_budget / min_budget))
         self.s_max = int(np.floor(np.log(self.max_budget / self.min_budget) / np.log(self.eta)))
 
         # 各bracket的预算序列
         self.bracket_budgets = {}
         for s in range(self.s_max + 1):
-            n_configs = int(np.ceil((self.s_max + 1) / (s + 1) * (self.eta ** s)))
+            # 原始配置数量
+            n_configs_raw = int(np.ceil((self.s_max + 1) / (s + 1) * (self.eta ** s)))
+
+            # 【修改】向上对齐到GPU数量的倍数
+            if self.n_gpus > 1:
+                n_configs = int(np.ceil(n_configs_raw / self.n_gpus) * self.n_gpus)
+            else:
+                n_configs = n_configs_raw
+
             min_budget_s = self.max_budget * (self.eta ** (-s))
             budgets = [int(min_budget_s * (self.eta ** i)) for i in range(s + 1)]
+
             self.bracket_budgets[s] = {
                 'n_configs': n_configs,
                 'budgets': budgets
@@ -165,6 +176,7 @@ class EnhancedBOHBOptimizer:
         print(f"[EnhancedBOHB] Hyperband配置:")
         print(f"  s_max = {self.s_max}")
         print(f"  预算范围: [{self.min_budget}, {self.max_budget}]")
+        print(f"  GPU数量: {self.n_gpus}")
         for s, info in self.bracket_budgets.items():
             print(f"  Bracket {s}: {info['n_configs']} configs, budgets = {info['budgets']}")
 

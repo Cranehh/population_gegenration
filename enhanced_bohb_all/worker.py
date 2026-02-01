@@ -18,36 +18,24 @@ import time
 
 
 class PopulationDiTWorker:
-    """
-    PopulationDiT模型训练Worker
-
-    封装模型训练逻辑，提供BOHB优化所需的评估接口
-
-    Usage:
-        worker = PopulationDiTWorker(data_dir='数据')
-        loss, info = worker.evaluate(config, budget=50)
-    """
-
     def __init__(
         self,
         data_dir: str = '数据',
-        device: Optional[str] = None,
+        device: Optional[str] = None,  # 可以指定具体GPU，如 'cuda:0'
+        gpu_id: Optional[int] = None,  # 新增：直接指定GPU ID
         num_workers: int = 4,
         validation_split: float = 0.1,
         early_stopping_patience: int = 10,
         log_every: int = 50
     ):
-        """
-        初始化Worker
+        if gpu_id is not None:
+            self.device = f'cuda:{gpu_id}'
+        elif device is not None:
+            self.device = device
+        else:
+            self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-        Args:
-            data_dir: 数据目录
-            device: 计算设备 ('cuda' 或 'cpu')
-            num_workers: 数据加载线程数
-            validation_split: 验证集比例
-            early_stopping_patience: 早停耐心值
-            log_every: 日志频率
-        """
+
         self.data_dir = data_dir
         self.device = device or ('cuda' if torch.cuda.is_available() else 'cpu')
         self.num_workers = num_workers
@@ -217,11 +205,11 @@ class PopulationDiTWorker:
 
         # 提取超参数
         batch_size = int(config.get('batch_size', 1024))
-        lr = config.get('lr', 1e-4)
-        weight_decay = config.get('weight_decay', 1e-4)
-        grad_clip = config.get('grad_clip', 1.0)
-        rho = config.get('rho', 0.85)
-        num_timesteps = config.get('num_timesteps', 200)
+        lr = float(config.get('lr', 1e-4))
+        weight_decay = float(config.get('weight_decay', 1e-4))
+        grad_clip = float(config.get('grad_clip', 1.0))
+        rho = float(config.get('rho', 0.85))
+        num_timesteps = int(config.get('num_timesteps', 200))  # 【关键】确保是int
 
         # 加载数据
         self._load_data(batch_size)

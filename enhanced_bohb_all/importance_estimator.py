@@ -108,12 +108,63 @@ class fANOVAImportance:
         self.is_fitted = True
 
         # 计算基于不纯度的重要性
-        self.importance_scores = dict(zip(
-            self.param_names,
-            self.rf.feature_importances_
-        ))
+        self.importance_scores = self._compute_fanova_importance(X_processed, y)
 
         return self
+
+    def _compute_fanova_importance(self, X: np.ndarray, y: np.ndarray) -> Dict[str, float]:
+        """
+        基于方差分解计算参数重要性
+
+        V(E[Y|X_i]) / V(Y) 表示参数 X_i 的主效应贡献
+        """
+        n_samples, n_params = X.shape
+        total_variance = np.var(y)
+
+        if total_variance == 0:
+            return {p: 1.0 / n_params for p in self.param_names}
+
+        importance_scores = {}
+
+        for i, param_name in enumerate(self.param_names):
+            # 对参数i的取值进行分组
+            unique_values = np.unique(X[:, i])
+
+            if len(unique_values) > 20:
+                # 连续参数：分成20个bin
+                percentiles = np.percentile(X[:, i], np.linspace(0, 100, 21))
+                bins = np.digitize(X[:, i], percentiles[1:-1])
+            else:
+                # 离散参数：直接使用唯一值
+                bins = np.searchsorted(unique_values, X[:, i])
+
+            # 计算条件期望 E[Y|X_i = x]
+            conditional_means = []
+            bin_counts = []
+            for b in np.unique(bins):
+                mask = bins == b
+                if np.sum(mask) > 0:
+                    conditional_means.append(np.mean(y[mask]))
+                    bin_counts.append(np.sum(mask))
+
+            conditional_means = np.array(conditional_means)
+            bin_counts = np.array(bin_counts)
+
+            # 计算条件期望的方差 V(E[Y|X_i])
+            # 使用加权方差，权重为各bin的样本比例
+            weights = bin_counts / np.sum(bin_counts)
+            weighted_mean = np.sum(weights * conditional_means)
+            variance_of_conditional_mean = np.sum(weights * (conditional_means - weighted_mean) ** 2)
+
+            # 重要性 = V(E[Y|X_i]) / V(Y)
+            importance_scores[param_name] = variance_of_conditional_mean / total_variance
+
+        # 归一化使总和为1
+        total_imp = sum(importance_scores.values())
+        if total_imp > 0:
+            importance_scores = {k: v / total_imp for k, v in importance_scores.items()}
+
+        return importance_scores
 
     def _preprocess_features(self, X: np.ndarray, fit: bool = False) -> np.ndarray:
         """
@@ -143,33 +194,22 @@ class fANOVAImportance:
 
         return X_processed
 
-    def get_importance(
-        self,
-        method: str = 'impurity',
-        X: Optional[np.ndarray] = None,
-        y: Optional[np.ndarray] = None,
-        n_repeats: int = 10
-    ) -> Dict[str, float]:
+    def get_importance(self, method: str = 'fanova', X=None, y=None, n_repeats=10):
         """
         获取参数重要性
 
         Args:
-            method: 重要性计算方法
-                   'impurity' - 基于不纯度减少（快速）
-                   'permutation' - 基于置换（更准确但更慢）
-            X: 特征矩阵（置换方法需要）
-            y: 目标值（置换方法需要）
-            n_repeats: 置换重复次数
-
-        Returns:
-            参数重要性字典 {param_name: importance_score}
+            method: 'fanova' - 方差分解（默认）
+                    'impurity' - 随机森林不纯度
+                    'permutation' - 置换重要性
         """
         if not self.is_fitted:
             raise ValueError("模型未拟合，请先调用fit()")
 
-        if method == 'impurity':
+        if method == 'fanova':
             return self.importance_scores.copy()
-
+        elif method == 'impurity':
+            return dict(zip(self.param_names, self.rf.feature_importances_))
         elif method == 'permutation':
             if X is None or y is None:
                 raise ValueError("置换方法需要提供X和y")

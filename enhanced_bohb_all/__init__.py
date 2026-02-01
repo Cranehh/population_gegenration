@@ -6,6 +6,7 @@ from .adaptive_kde import AdaptiveBandwidthKDE, ImportanceAwareTPE
 from .enhanced_bohb import EnhancedBOHBOptimizer, SimplifiedBOHB
 from .config_space import create_population_dit_configspace, get_default_config
 from .worker import PopulationDiTWorker
+from .parallel_bohb import ParallelBOHBOptimizer
 
 __all__ = [
     'fANOVAImportance',
@@ -15,7 +16,8 @@ __all__ = [
     'EnhancedBOHBOptimizer',
     'create_population_dit_configspace',
     'PopulationDiTWorker',
-    'SimplifiedBOHB'
+    'SimplifiedBOHB',
+    'ParallelBOHBOptimizer'
 ]
 
 __version__ = '1.0.0'
