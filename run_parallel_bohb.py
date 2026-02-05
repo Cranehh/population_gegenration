@@ -35,8 +35,8 @@ def parse_args():
 
     # BOHB参数
     parser.add_argument('--n_iterations', type=int, default=100)
-    parser.add_argument('--min_budget', type=int, default=10)
-    parser.add_argument('--max_budget', type=int, default=100)
+    parser.add_argument('--min_budget', type=int, default=5)
+    parser.add_argument('--max_budget', type=int, default=50)
     parser.add_argument('--eta', type=int, default=3)
 
     return parser.parse_args()

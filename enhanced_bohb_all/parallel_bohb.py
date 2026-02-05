@@ -28,23 +28,55 @@ def _worker_evaluate(args):
     """
     config, budget, gpu_id, data_dir, worker_kwargs = args
 
+    # 【关键修复】确保所有类型都是Python原生类型
+    budget = int(budget)
+    gpu_id = int(gpu_id)
+    
+    # 转换config中的所有numpy类型为Python原生类型
+    config = _convert_config_types(config)
+    
     # 设置当前进程只能看到指定的GPU
     os.environ['CUDA_VISIBLE_DEVICES'] = str(gpu_id)
-
-    # 创建Worker（此时cuda:0就是实际的gpu_id）
+    
+    # 创建Worker
     worker = PopulationDiTWorker(
         data_dir=data_dir,
-        device='cuda:0',  # 因为CUDA_VISIBLE_DEVICES已设置，这里用cuda:0
+        device='cuda:0',
         **worker_kwargs
     )
 
-    try:
-        loss, info = worker.evaluate(config, budget)
-        return (config, loss, info, gpu_id)
-    except Exception as e:
-        print(f"[GPU {gpu_id}] 评估失败: {e}")
-        return (config, float('inf'), {'error': str(e)}, gpu_id)
+    
+    loss, info = worker.evaluate(config, budget)
+    return (config, loss, info, gpu_id)
+    # try:
+    #     loss, info = worker.evaluate(config, budget)
+    #     return (config, loss, info, gpu_id)
+    # except Exception as e:
+    #     print(f"[GPU {gpu_id}] 评估失败: {e}")
+    #     return (config, float('inf'), {'error': str(e)}, gpu_id)
 
+
+def _convert_config_types(config: Dict) -> Dict:
+    """
+    将config中的numpy类型转换为Python原生类型
+    
+    这对于跨进程传递参数是必要的
+    """
+    import numpy as np
+    
+    converted = {}
+    for key, value in config.items():
+        if isinstance(value, (np.integer,)):
+            converted[key] = int(value)
+        elif isinstance(value, (np.floating,)):
+            converted[key] = float(value)
+        elif isinstance(value, np.ndarray):
+            converted[key] = value.tolist()
+        elif isinstance(value, np.bool_):
+            converted[key] = bool(value)
+        else:
+            converted[key] = value
+    return converted
 
 class ParallelBOHBOptimizer:
     """
@@ -62,8 +94,8 @@ class ParallelBOHBOptimizer:
             min_budget: int = 10,
             max_budget: int = 200,
             eta: int = 3,
-            min_points_in_model: int = 20,
-            importance_update_frequency: int = 10,
+            min_points_in_model: int = 10,
+            importance_update_frequency: int = 5,
             gamma: float = 0.15,
             n_candidates: int = 64,
             random_fraction: float = 0.1,
@@ -109,7 +141,9 @@ class ParallelBOHBOptimizer:
         configs = []
         for _ in range(n):
             config, _ = self.bohb.get_next_config(budget)
-            configs.append((config, budget))
+            # 【修复】转换类型
+            clean_config = _convert_config_types(config)
+            configs.append((clean_config, int(budget)))
         return configs
 
     def _parallel_evaluate(
@@ -127,11 +161,16 @@ class ParallelBOHBOptimizer:
         """
         results = []
 
-        # 准备任务参数
         tasks = []
         for i, (config, budget) in enumerate(configs_with_budget):
             gpu_id = self.gpu_ids[i % len(self.gpu_ids)]
-            tasks.append((config, budget, gpu_id, self.data_dir, self.worker_kwargs))
+            
+            # 转换所有numpy类型为Python原生类型
+            clean_config = _convert_config_types(config)
+            clean_budget = int(budget)
+            clean_gpu_id = int(gpu_id)
+            
+            tasks.append((clean_config, clean_budget, clean_gpu_id, self.data_dir, self.worker_kwargs))
 
         # 使用进程池并行执行
         # 注意：需要使用'spawn'方式启动进程以避免CUDA问题
@@ -140,12 +179,12 @@ class ParallelBOHBOptimizer:
             futures = [executor.submit(_worker_evaluate, task) for task in tasks]
 
             for future in as_completed(futures):
-                try:
-                    config, loss, info, gpu_id = future.result()
-                    results.append((config, loss, info))
-                    print(f"  [GPU {gpu_id}] 完成: loss={loss:.4f}")
-                except Exception as e:
-                    print(f"  评估异常: {e}")
+                # try:
+                config, loss, info, gpu_id = future.result()
+                results.append((config, loss, info))
+                print(f"  [GPU {gpu_id}] 完成: loss={loss:.4f}")
+                # except Exception as e:
+                #     print(f"  评估异常: {e}")
 
         return results
 
@@ -177,8 +216,12 @@ class ParallelBOHBOptimizer:
             print(f"  预算序列: {budgets}")
             print(f"  并行GPU数: {len(self.gpu_ids)}")
 
-        # 初始配置采样
-        configs = [self.bohb.get_next_config(budgets[0])[0] for _ in range(n_configs)]
+        # 【修复】初始配置采样，确保类型正确
+        configs = []
+        for _ in range(n_configs):
+            config, _ = self.bohb.get_next_config(int(budgets[0]))
+            configs.append(_convert_config_types(config))
+
         observations = []
 
         # Successive Halving循环

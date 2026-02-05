@@ -127,7 +127,7 @@ def create_population_dit_configspace(
 
         num_timesteps = CategoricalHyperparameter(
             'num_timesteps',
-            choices=[100, 200, 500, 1000],
+            choices=[200],
             default_value=200
         )
 

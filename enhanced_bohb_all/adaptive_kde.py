@@ -497,39 +497,34 @@ class ImportanceAwareTPE:
         return self.cs.sample_configuration().get_dictionary()
 
     def _sample_from_good_kde(self) -> Dict:
-        """从好配置的KDE中采样"""
+        """从好配置的KDE中采样，确保类型正确"""
         config = {}
+        
+        # 定义哪些参数必须是整数
+        INT_PARAMS = {'batch_size', 'num_timesteps', 'hidden_dim', 'num_layers', 'num_heads'}
 
         for param_name in self.param_names:
             hp = self.cs.get_hyperparameter(param_name)
             bounds = self.param_bounds.get(param_name)
 
             if param_name in self.good_kde.kdes:
-                # 从KDE采样
                 value = self.good_kde.sample(param_name, 1, bounds)[0]
 
-                # 处理不同类型的参数
                 if hasattr(hp, 'choices'):
-                    # 分类参数：四舍五入到最近的选项索引
+                    # 分类参数
                     idx = int(np.clip(np.round(value), 0, len(hp.choices) - 1))
                     config[param_name] = hp.choices[idx]
+                elif param_name in INT_PARAMS:
+                    # 【关键】已知的整数参数
+                    value = np.clip(value, hp.lower, hp.upper)
+                    config[param_name] = int(np.round(value))
                 elif hasattr(hp, 'lower'):
-                    # 数值参数：限制在边界内
-                    if hasattr(hp, 'log') and hp.log:
-                        # 对数参数
-                        value = np.clip(value, hp.lower, hp.upper)
-                    else:
-                        value = np.clip(value, hp.lower, hp.upper)
-
-                    # 整数参数
-                    if hasattr(hp, 'q') or str(type(hp).__name__).startswith('Integer'):
-                        value = int(np.round(value))
-
-                    config[param_name] = value
+                    # 浮点数值参数
+                    value = np.clip(value, hp.lower, hp.upper)
+                    config[param_name] = float(value)
                 else:
-                    config[param_name] = value
+                    config[param_name] = float(value)
             else:
-                # KDE不可用，随机采样
                 config[param_name] = hp.sample(self.cs.random)
 
         return config

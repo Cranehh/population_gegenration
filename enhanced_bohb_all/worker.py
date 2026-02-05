@@ -15,6 +15,112 @@ from collections import OrderedDict
 from copy import deepcopy
 from tqdm import tqdm
 import time
+import pandas as pd
+
+import itertools
+def calc_srmse(raw_df, synth_df, max_value_list):
+    srmse_results = {}
+
+    # 遍历所有可能的属性组合（1维、2维、...）
+    r = len(max_value_list)
+    number_of_combinations = 0
+    srmse_sum = 0.0
+    for cols in itertools.combinations(raw_df.columns, r):
+        # 计算联合分布频率
+        real_counts = raw_df.groupby(list(cols)).size().reset_index(name='count')
+        synth_counts = synth_df.groupby(list(cols)).size().reset_index(name='count')
+
+        # 合并并补全缺失组合
+        merged = pd.merge(real_counts, synth_counts, on=list(cols), how='outer', suffixes=('_real', '_synth')).fillna(0)
+
+        # 转换为频率分布
+        # merged['π_real'] = merged['count_real'] / merged['count_real'].sum()
+        # merged['π_synth'] = merged['count_synth'] / merged['count_synth'].sum()
+
+        merged['π_real'] = merged['count_real']
+        merged['π_synth'] = merged['count_synth']
+        # 计算 SRMSE
+        N_cnt = len(merged)
+        numerator = np.sqrt(((merged['π_synth'] - merged['π_real']) ** 2).sum() / N_cnt)
+        denominator = (merged['π_real'].sum()) / N_cnt
+        srmse = numerator / denominator if denominator != 0 else np.nan
+        # srmse = numerator
+
+        srmse_results[cols] = srmse
+        srmse_sum += srmse
+        number_of_combinations += 1
+    avg_srmse = srmse_sum / number_of_combinations if number_of_combinations > 0 else np.nan
+
+    return avg_srmse
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+        
+# 获取上级目录（enhanced_bohb_all 的父目录）
+parent_dir = os.path.dirname(current_dir)
+
+# 构建完整的数据目录路径
+data_dir = os.path.join(parent_dir, '数据')
+
+pd.set_option('display.max_columns', None)
+family2014 = pd.read_csv(f'{data_dir}/居民出行数据/2014/family_2014.csv',dtype=str)
+travel2014 = pd.read_csv(f'{data_dir}/居民出行数据/2014/midtable_2014.csv',dtype=str)
+familymember_2014 = pd.read_csv(f'{data_dir}/居民出行数据/2014/family_member_2014.csv',dtype=str)
+family2023 = pd.read_csv(f'{data_dir}/居民出行数据/2023/family_total_33169.csv',dtype=str)
+travel2023 = pd.read_csv(f'{data_dir}/居民出行数据/2023/midtable_total_33169.csv',dtype=str)
+familymember_2023 = pd.read_csv(f'{data_dir}/居民出行数据/2023/familymember_total_33169.csv',dtype=str)
+family_cluster = pd.read_csv(f'{data_dir}/family_cluster_improved.csv',dtype=str)
+cluster_profile = pd.read_csv(f'{data_dir}/cluster_profile_improved.csv',dtype=str)
+cluster_profile.iloc[:,1:] = cluster_profile.iloc[:,1:].astype(float)
+
+
+valid_member_number = familymember_2023.groupby('家庭编号').size().rename('家庭成员数量_real').reset_index()
+family2023 = pd.merge(family2023, valid_member_number, on='家庭编号', how='left')
+family2023 = family2023[family2023['家庭成员数量'].astype(int) == family2023['家庭成员数量_real']]
+valid_family = family2023[['家庭编号']]
+familymember_2023 = pd.merge(familymember_2023, valid_family, on='家庭编号', how='inner')
+## 家庭连续型变量
+family2023[['家庭成员数量','家庭工作人口数','机动车数量','脚踏自行车数量','电动自行车数量','摩托车数量','老年代步车数量']]
+have_student_family = familymember_2023[familymember_2023['职业'] == '14'].drop_duplicates(['家庭编号'])[['家庭编号']]
+have_student_family['have_student'] = 1
+family2023 = pd.merge(family2023, have_student_family, on='家庭编号', how='left').fillna({'have_student':0})
+
+
+familymember_2023['age'] = 2023 - familymember_2023['出生年份'].astype(int)
+familymember_2023['age_group'] = pd.cut(familymember_2023['age'], bins=[0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100], right=False, labels=['0-5','6-10','11-15','16-20','21-25','26-30','31-35','36-40','41-45','46-50','51-55','56-60','61-65','66-70','71-75','76-80','81-85','86-90','91-95','96-100'])
+familymember_2023.loc[familymember_2023['最高学历'].isna(),'最高学历'] = familymember_2023.loc[familymember_2023['最高学历'].isna(),'教育阶段']
+## 离散型变量,这里的关系有点不太对，有的户主很小
+familymember_2023[['性别','是否有驾照','关系','最高学历','职业']]
+familymember_2023['是否有驾照'] = familymember_2023['是否有驾照'].fillna('0')
+
+income_map = {'A':1, 'B':1, 'C':2, 'D':2, 'E':3, 'F':3, 'G':4, 'I':5, 'J':5, 'K':5}
+family2023['家庭年收入'] = family2023['家庭年收入'].map(income_map)
+familymember_2023['age_group'] = pd.cut(
+    familymember_2023['age'], 
+    bins=range(0, familymember_2023['age'].max() + 6, 5),
+    labels=False 
+)
+
+
+familymember_2023['age_group'] = familymember_2023['age_group'].fillna(0)
+familymember_2023['age'] = familymember_2023['age_group']
+# relation_map = {'0':0, '17':1, '1':2, '2':2, '5':2, '6':2, '13':3, '14':3, '15':3, '16':3, '9':3, '10':3, '7':4, '8':4, '11':5, '12':5}
+# education_map = {'1':1, '2':1, '3':2, '4':2, '5':3, '6':4, '7':5, '8':6, '9':7}
+# occupation_map = {'1':1, '2':1, '3':1, '4':2, '5':2, '6':3, '7':2, '8':3, '9':1, '10':4, '11':4, '12':4, '13':5, '14':6, '15':7, '16':8, '17':8, '18':1, '19':1, '20':8}
+
+# familymember_2023['关系'] = familymember_2023['关系'].map(relation_map)
+# familymember_2023['最高学历'] = familymember_2023['最高学历'].map(education_map)
+# familymember_2023['职业'] = familymember_2023['职业'].map(occupation_map)
+familymember_2023['关系'].value_counts().shape, familymember_2023['最高学历'].value_counts().shape, familymember_2023['职业'].value_counts().shape
+from population_data_process_nonclip_reclass import *
+## 家庭的变量编码
+test = PopulationDataEncoder()
+family_cluster.rename(columns={'improved_cluster':'cluster'}, inplace=True)
+family2023 = pd.merge(family2023,family_cluster[['家庭编号','cluster']], on='家庭编号', how='left')
+cluster_profile.rename(columns={'improved_cluster':'cluster'}, inplace=True)
+# 2. 拟合数据 (需要你的实际数据)
+test.fit_family_data(family2023)
+test.fit_person_data(familymember_2023)
+
 
 
 class PopulationDiTWorker:
@@ -204,6 +310,7 @@ class PopulationDiTWorker:
             raise ImportError("无法导入损失函数模块")
 
         # 提取超参数
+        # 提取超参数，确保类型正确
         batch_size = int(config.get('batch_size', 1024))
         lr = float(config.get('lr', 1e-4))
         weight_decay = float(config.get('weight_decay', 1e-4))
@@ -379,6 +486,11 @@ class PopulationDiTWorker:
         model.eval()
         total_loss = 0
         n_batches = 0
+        results_family_list = []
+        results_member_list = []
+
+        raw_data_family_list = []
+        raw_data_member_list = []
 
         for batch in self._val_loader:
             family_data = batch['family'].to(self.device)
@@ -414,6 +526,12 @@ class PopulationDiTWorker:
                 family_cluster, cluster_profile, person_mask, t, t
             )
 
+            results_family_list.append(pred_family.detach().cpu().numpy())
+            results_member_list.append(pred_member.detach().cpu().numpy())
+
+            raw_data_family_list.append(family_data.detach().cpu().numpy())
+            raw_data_member_list.append(member_data.detach().cpu().numpy())
+
             loss_dict = compute_total_loss(
                 pred_family, family_data,
                 pred_member, member_data, person_mask,
@@ -424,8 +542,147 @@ class PopulationDiTWorker:
             total_loss += loss_dict['total_loss'].mean().item()
             n_batches += 1
 
+        
+        results_family_df = pd.DataFrame(np.concatenate(results_family_list, axis=0))
+        raw_family_df = pd.DataFrame(np.concatenate(raw_data_family_list, axis=0))
+        results_person_df = pd.DataFrame(np.concatenate(results_member_list, axis=0).reshape(-1, 51))
+        raw_person_df = pd.DataFrame(np.concatenate(raw_data_member_list, axis=0).reshape(-1, 51))
+
+        results_family_df['have_student'] = results_family_df[[8,9]].values.argmax(axis=1)
+        raw_family_df['have_student'] = raw_family_df[[8,9]].values.argmax(axis=1)
+        results_family_df = results_family_df[[0,1,2,3,4,5,6,7,'have_student']]
+        results_family_df.columns = ['family_家庭成员数量','family_家庭工作人口数','family_机动车数量','family_脚踏自行车数量','family_电动自行车数量','family_摩托车数量','family_老年代步车数量','income','have_student']
+        raw_family_df = raw_family_df[[0,1,2,3,4,5,6,7,'have_student']]
+        raw_family_df.columns = ['family_家庭成员数量','family_家庭工作人口数','family_机动车数量','family_脚踏自行车数量','family_电动自行车数量','family_摩托车数量','family_老年代步车数量','income','have_student']
+        raw_person_df['is_real'] = (raw_person_df[50] != 0)
+        results_person_df['is_real'] = raw_person_df['is_real']
+        raw_person_df = raw_person_df[raw_person_df['is_real'] == True]
+        results_person_df = results_person_df[results_person_df['is_real'] == True]
+        results_person_df['gender'] = results_person_df[[1,2]].values.argmax(axis=1)
+        results_person_df['license'] = results_person_df[[3,4]].values.argmax(axis=1)
+        results_person_df['relation'] = results_person_df.iloc[:,5:21].values.argmax(axis=1)
+        results_person_df['education'] = results_person_df.iloc[:,21:30].values.argmax(axis=1)
+        results_person_df['occupation'] = results_person_df.iloc[:,30:50].values.argmax(axis=1)
+
+        raw_person_df['gender'] = raw_person_df[[1,2]].values.argmax(axis=1)
+        raw_person_df['license'] = raw_person_df[[3,4]].values.argmax(axis=1)
+        raw_person_df['relation'] = raw_person_df.iloc[:,5:21].values.argmax(axis=1)
+        raw_person_df['education'] = raw_person_df.iloc[:,21:30].values.argmax(axis=1)
+        raw_person_df['occupation'] = raw_person_df.iloc[:,30:50].values.argmax(axis=1)
+        results_person_df = results_person_df[[0,'gender','license','relation','education','occupation',50]]
+        results_person_df.columns = ['age','gender','license','relation','education','occupation','label']
+        raw_person_df = raw_person_df[[0,'gender','license','relation','education','occupation',50]]
+        raw_person_df.columns = ['age','gender','license','relation','education','occupation','label']
+        results_family_df.rename(columns = {'income' : 'family_家庭年收入'}, inplace=True)
+        raw_family_df.rename(columns = {'income' : 'family_家庭年收入'}, inplace=True)
+
+        decode_results_family = test.decode_family_continuous(results_family_df)
+        for col in decode_results_family.keys():
+            results_family_df[f'family_{col}'] = decode_results_family[col]
+        decode_raw_family = test.decode_family_continuous(raw_family_df)
+        for col in decode_raw_family.keys():
+            raw_family_df[f'family_{col}'] = decode_raw_family[col]
+        results_person_df['age'] = test.decode_person_continuous(results_person_df['age'])['age_actual']
+        raw_person_df['age'] = test.decode_person_continuous(raw_person_df['age'])['age_actual']
+
+        ## 有老人、有学生、有驾照的比例、性别比例、本科以上比例、雇佣比例, 集成到家庭中
+        total_ls_raw = []
+        total_ls_generate = []
+        person_number = raw_family_df['family_家庭成员数量'].values.cumsum()
+        for i in range(len(person_number)):
+            if i == 0:
+                start_idx = 0
+            else:
+                start_idx = person_number[i-1]
+            end_idx = person_number[i]
+            person_in_family = raw_person_df.iloc[start_idx:end_idx,:]
+            person_in_family_generate = results_person_df.iloc[start_idx:end_idx,:]
+            
+            ls = []
+            ls.append(int((person_in_family['age'] > 11).sum() >= 1))
+            ls.append((person_in_family['license']).mean())
+            ls.append((person_in_family['gender']).mean())
+            ls.append((person_in_family['education'].isin([6, 7])).mean())
+            ls.append((-person_in_family['occupation'].isin([14, 13, 16])).mean())
+            total_ls_raw.append(ls)
+
+            ls_generate = []
+            ls_generate.append(int((person_in_family_generate['age'] > 11).sum() >= 1))
+            ls_generate.append((person_in_family_generate['license']).mean())
+            ls_generate.append((person_in_family_generate['gender']).mean())
+            ls_generate.append((person_in_family_generate['education'].isin([6, 7])).mean())
+            ls_generate.append((-person_in_family_generate['occupation'].isin([14, 13, 16])).mean())
+            total_ls_generate.append(ls_generate)
+
+
+
+        extended_raw_family_df = pd.concat([raw_family_df.reset_index(drop=True), pd.DataFrame(total_ls_raw, columns=['have_elder_ext', 'license_ext', 'gender_ext', 'education_ext', 'employed_ext'])], axis=1)
+        extended_results_family_df = pd.concat([results_family_df.reset_index(drop=True), pd.DataFrame(total_ls_generate, columns=['have_elder_ext', 'license_ext', 'gender_ext', 'education_ext', 'employed_ext'])], axis=1)
+        extended_raw_family_df['license_ext'] = pd.cut(
+            extended_raw_family_df['license_ext'], 
+            bins=np.linspace(0, 1, 6),   # 生成 [0,0.2,0.4,0.6,0.8,1.0]
+            labels=False,                # 输出整数标签 0,1,2,3,4
+            include_lowest=True          # 包含左边界0
+        )
+
+        extended_results_family_df['license_ext'] = pd.cut(
+            extended_results_family_df['license_ext'], 
+            bins=np.linspace(0, 1, 6),   # 生成 [0,0.2,0.4,0.6,0.8,1.0]
+            labels=False,                # 输出整数标签 0,1,2,3,4
+            include_lowest=True          # 包含左边界0
+        )
+
+        extended_raw_family_df['gender_ext'] = pd.cut(
+            extended_raw_family_df['gender_ext'], 
+            bins=np.linspace(0, 1, 6),   # 生成 [0,0.2,0.4,0.6,0.8,1.0]
+            labels=False,                # 输出整数标签 0,1,2,3,4
+            include_lowest=True          # 包含左边界0
+        )
+
+        extended_results_family_df['gender_ext'] = pd.cut(
+            extended_results_family_df['gender_ext'], 
+            bins=np.linspace(0, 1, 6),   # 生成 [0,0.2,0.4,0.6,0.8,1.0]
+            labels=False,                # 输出整数标签 0,1,2,3,4
+            include_lowest=True          # 包含左边界0
+        )
+
+        extended_raw_family_df['education_ext'] = pd.cut(
+            extended_raw_family_df['education_ext'], 
+            bins=np.linspace(0, 1, 6),   # 生成 [0,0.2,0.4,0.6,0.8,1.0]
+            labels=False,                # 输出整数标签 0,1,2,3,4
+            include_lowest=True          # 包含左边界0
+        )
+
+        extended_results_family_df['education_ext'] = pd.cut(
+            extended_results_family_df['education_ext'], 
+            bins=np.linspace(0, 1, 6),   # 生成 [0,0.2,0.4,0.6,0.8,1.0]
+            labels=False,                # 输出整数标签 0,1,2,3,4
+            include_lowest=True          # 包含左边界0
+        )
+
+        extended_raw_family_df['employed_ext'] = pd.cut(
+            extended_raw_family_df['employed_ext'], 
+            bins=np.linspace(0, 1, 6),   # 生成 [0,0.2,0.4,0.6,0.8,1.0]
+            labels=False,                # 输出整数标签 0,1,2,3,4
+            include_lowest=True          # 包含左边界0
+        )
+
+        extended_results_family_df['employed_ext'] = pd.cut(
+            extended_results_family_df['employed_ext'], 
+            bins=np.linspace(0, 1, 6),   # 生成 [0,0.2,0.4,0.6,0.8,1.0]
+            labels=False,                # 输出整数标签 0,1,2,3,4
+            include_lowest=True          # 包含左边界0
+        )
+        max_value_list_extendfamily = []
+        for i in range(len(extended_raw_family_df.columns)):
+            raw_max = extended_raw_family_df.iloc[:, i].max()
+            results_max = extended_results_family_df.iloc[:, i].max()
+            max_value = max(raw_max, results_max)
+            max_value_list_extendfamily.append(max_value)
+        srmse_results = calc_srmse(extended_raw_family_df, extended_results_family_df, max_value_list_extendfamily)
+
         model.train()
-        return total_loss / n_batches
+        return srmse_results
 
 
 def create_evaluate_function(
