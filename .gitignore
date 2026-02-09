@@ -9,7 +9,7 @@ checkpoints/
 文献综述/
 *.pth
 *.pt
-results/
+*results/
 VAE训练数据/
 *.pkl
 *checkpoints/
