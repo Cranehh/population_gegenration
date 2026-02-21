@@ -56,17 +56,17 @@ def parse_args():
     # 并行参数
     parser.add_argument('--parallel', action='store_true', default=True,
                         help='启用多GPU并行')
-    parser.add_argument('--n_gpus', type=int, default=4,
+    parser.add_argument('--n_gpus', type=int, default=1,
                         help='GPU数量')
     parser.add_argument('--gpu_ids', type=str, default=None,
                         help='指定GPU ID，如 "0,1,2,3"')
     
     # Hyperband参数
-    parser.add_argument('--n_brackets', type=int, default=10,
+    parser.add_argument('--n_brackets', type=int, default=2,
                         help='运行的bracket数量')
-    parser.add_argument('--min_budget', type=int, default=5,
+    parser.add_argument('--min_budget', type=int, default=1,
                         help='最小评估预算(epoch)')
-    parser.add_argument('--max_budget', type=int, default=50,
+    parser.add_argument('--max_budget', type=int, default=5,
                         help='最大评估预算(epoch)')
     parser.add_argument('--eta', type=int, default=3,
                         help='Successive Halving缩减因子')
