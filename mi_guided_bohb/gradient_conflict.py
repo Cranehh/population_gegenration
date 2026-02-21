@@ -370,8 +370,29 @@ class ConflictAwareDistributionUpdater:
         
         # 1. 基于冲突暴露度膨胀方差
         for loss_name, param_name in self.loss_to_param_map.items():
-            if param_name in self.current_std and loss_name in normalized_exposure:
-                exp = normalized_exposure[loss_name]
+            if param_name in self.current_std:
+                prex = loss_name.split('_')[0]
+                n = 0
+                exp = 0
+                if prex =='family':
+                    for i, j in normalized_exposure.items():
+                        if prex in i:
+                            exp += j
+                            n += 1
+                elif prex == 'person':
+                    for i, j in normalized_exposure.items():
+                        if prex in i:
+                            exp += j
+                            n += 1
+                elif prex == 'graph':
+                    for i, j in normalized_exposure.items():
+                        if prex in i:
+                            exp += j
+                            n += 1
+                else:
+                    exp = normalized_exposure['mask_loss'] + normalized_exposure['total_member_loss']
+                    n = 2
+                exp = exp / n
                 # σ_new = σ_old × (1 + β × E)
                 inflation_factor = 1 + self.beta * exp * len(exposure)
                 new_std = self.current_std[param_name] * inflation_factor

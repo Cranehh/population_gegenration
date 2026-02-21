@@ -148,8 +148,8 @@ class ConflictAwareWorker:
         loss_names: Optional[List[str]] = None,
         num_workers: int = 4,
         validation_split: float = 0.1,
-        conflict_detection_freq: int = 10,
-        log_every: int = 50
+        conflict_detection_freq: int = 20,
+        log_every: int = 10
     ):
         """
         初始化Worker

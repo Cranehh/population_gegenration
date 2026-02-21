@@ -13,3 +13,4 @@ checkpoints/
 VAE训练数据/
 *.pkl
 *checkpoints/
+simulation*/

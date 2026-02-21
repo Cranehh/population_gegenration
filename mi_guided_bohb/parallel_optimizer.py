@@ -14,6 +14,7 @@ import torch.multiprocessing as mp
 import numpy as np
 from typing import Dict, List, Tuple, Optional, Callable, Any
 from concurrent.futures import ProcessPoolExecutor, as_completed
+from collections import defaultdict
 from dataclasses import dataclass
 
 from .mi_guided_optimizer import MIGuidedBOHB, ConfigEvaluation, BracketResult
@@ -62,7 +63,7 @@ def _worker_evaluate(args: Tuple) -> Tuple[Dict, float, Dict, Optional[Dict], in
         worker = worker_class(
             data_dir=data_dir,
             device='cuda:0',
-            loss_names=loss_names,
+            # loss_names=loss_names,
             **worker_kwargs
         )
         
@@ -285,13 +286,19 @@ class ParallelMIGuidedBOHB(MIGuidedBOHB):
         
         # 聚合冲突暴露度
         if all_exposures:
-            aggregated_exposure = {}
-            for name in self.loss_names:
-                values = [exp.get(name, 0.0) for exp in all_exposures if isinstance(exp, dict)]
-                aggregated_exposure[name] = np.mean(values) if values else 0.0
+            aggregated_exposure = defaultdict(float)
+            for info in all_exposures:
+                print(info)
+                for name, exp in info.items():
+                    aggregated_exposure[name] += exp
+            aggregated_exposure = {
+                k: v / len(all_exposures)
+                for k, v in aggregated_exposure.items()
+            }
         else:
             aggregated_exposure = {name: 0.0 for name in self.loss_names}
-        
+
+        print(aggregated_exposure)
         # 找最佳配置
         best_eval = min(evaluations, key=lambda x: x.loss)
         
